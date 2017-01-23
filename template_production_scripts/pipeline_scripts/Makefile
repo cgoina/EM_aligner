@@ -81,5 +81,18 @@ generate_slab_definitions: bin generate_slab_definitions.m
 	-I ${EM_ALIGNER_LIB_DIR}/external/jsonlab \
 	-I ${EM_ALIGNER_LIB_DIR}/renderer_api
 
+solve_montages: bin solve_montages.m
+	mcc \
+	-v \
+	-m solve_montages \
+	-d bin \
+	-I ${EM_ALIGNER_LIB_DIR}/classes \
+	-I ${EM_ALIGNER_LIB_DIR}/solver \
+	-I ${EM_ALIGNER_LIB_DIR}/level_0 \
+	-I ${EM_ALIGNER_LIB_DIR}/level_1 \
+	-I ${EM_ALIGNER_LIB_DIR}/matlab_compiled \
+	-I ${EM_ALIGNER_LIB_DIR}/external/jsonlab \
+	-I ${EM_ALIGNER_LIB_DIR}/renderer_api
+
 clean:
 	rm -f bin/*
