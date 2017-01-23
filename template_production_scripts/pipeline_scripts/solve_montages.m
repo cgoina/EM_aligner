@@ -44,10 +44,18 @@ parfor z = start_z:end_z
         if slprl.filter_point_matches
             tic;if slprl.verbose, disp('-- Filtering point matches');end
             pmfopts = struct()
-            pmfopts.NumRandomSamplingsMethod = 'Desired confidence';
-            pmfopts.MaximumRandomSamples = 1000;
-            pmfopts.DesiredConfidence = 99.9;
-            pmfopts.PixelDistanceThreshold = 0.1;
+            if isfield(slprl, 'pm_filter_opts')
+                pmfopts = slprl.pm_filter_opts
+                pmfopts.NumRandomSamplingsMethod = eval_field(pmfopts, 'NumRandomSamplingsMethod', 'Desired confidence', true);
+                pmfopts.MaximumRandomSamples = eval_field(pmfopts, 'MaximumRandomSamples', 1000);
+                pmfopts.DesiredConfidence = eval_field(pmfopts, 'DesiredConfidence', 99.8); % typical values 99.5 to 99.9, the higher the stricter
+                pmfopts.PixelDistanceThreshold = eval_field(pmfopts, 'PixelDistanceThreshold', 0.1);% typical values 0.001 to 1.0, the lower the stricter
+            else
+                pmfopts.NumRandomSamplingsMethod = 'Desired confidence';
+                pmfopts.MaximumRandomSamples = 1000;
+                pmfopts.DesiredConfidence = 99.9;
+                pmfopts.PixelDistanceThreshold = 0.1;
+            end
             if slprl.verbose, 
                 disp('using point-match filter:');
                 disp(pmfopts);
