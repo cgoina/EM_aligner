@@ -94,5 +94,19 @@ solve_montages: bin solve_montages.m
 	-I ${EM_ALIGNER_LIB_DIR}/external/jsonlab \
 	-I ${EM_ALIGNER_LIB_DIR}/renderer_api
 
+montage_section: bin ${EM_ALIGNER_LIB_DIR}/matlab_compiled/montage_section_SL_prll.m
+	mcc \
+	-v \
+	-m ${EM_ALIGNER_LIB_DIR}/matlab_compiled/montage_section_SL_prll \
+	-d bin \
+	-I ${EM_ALIGNER_LIB_DIR}/classes \
+	-I ${EM_ALIGNER_LIB_DIR}/solver \
+	-I ${EM_ALIGNER_LIB_DIR}/level_0 \
+	-I ${EM_ALIGNER_LIB_DIR}/level_1 \
+	-I ${EM_ALIGNER_LIB_DIR}/matlab_compiled \
+	-I ${EM_ALIGNER_LIB_DIR}/external/jsonlab \
+	-I ${EM_ALIGNER_LIB_DIR}/renderer_api
+
+
 clean:
 	rm -f bin/*
