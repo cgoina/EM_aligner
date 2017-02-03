@@ -20,19 +20,17 @@ def readPairs(f):
 def writePairs(pairs, f=None):
     INDENT = 2
     if f is None:
-        json.dump(pairs, sys.stdout, indent=INDENT)
+        json.dump(pairs, sys.stdout, indent=INDENT, sort_keys=True)
     else:
         if f.endswith('.gz'):
             open_fn = gzip.open
         else:
             open_fn = open
         with open_fn(f, 'w') as newPairsFile:
-            json.dump(pairs, newPairsFile, indent=INDENT)
+            json.dump(pairs, newPairsFile, indent=INDENT, sort_keys=True)
 
 
-def indexTilePairs(tilePairs):
-    indexedGroups = {}
-
+def indexTilePairs(tilePairs, indexedGroups={}):
     for tp in tilePairs['neighborPairs']:
         indexedGroupKey = pairGroups(tp)
         indexedGroup = indexedGroups.get(indexedGroupKey, None)
@@ -71,8 +69,9 @@ def main(args=None):
     f2 = args[1]
     f3 = args[2] if len(args) > 2 else None
 
-    f1IndexedPairs = indexTilePairs(readPairs(f1))
-    f2Pairs = readPairs(f2)
+    f1IndexedPairs = {}
+    for f in f1.split(','):
+        f1IndexedPairs = indexTilePairs(readPairs(f), f1IndexedPairs)
 
     cond_for_common_groups_only = lambda tp: pairGroups(tp) in f1IndexedPairs and tilePair(tp) not in f1IndexedPairs[pairGroups(tp)]
 
@@ -81,10 +80,35 @@ def main(args=None):
     else:
         include_cond = cond_for_common_groups_only
 
-    filteredPairs = [tp for tp in f2Pairs['neighborPairs'] if include_cond(tp)]
-    f2Pairs['neighborPairs'] = filteredPairs
 
-    writePairs(f2Pairs, f3)
+    newPairs = {
+    }
+
+    def pair_iterator(fileList):
+        alreadyFoundPairs = set()
+        for f in fileList.split(','):
+            pairs = readPairs(f)
+            renderParametersUrlTemplate = pairs['renderParametersUrlTemplate']
+            previousRenderParametersUrlTemplate = newPairs.get('renderParametersUrlTemplate', None)
+
+            if previousRenderParametersUrlTemplate is None:
+                newPairs['renderParametersUrlTemplate'] = renderParametersUrlTemplate
+            elif previousRenderParametersUrlTemplate != renderParametersUrlTemplate:
+                yield Exception('RenderParametersTemplate must be the same for all new collections')
+
+            for tp in pairs['neighborPairs']:
+                if include_cond(tp):
+                    if tilePair(tp) not in alreadyFoundPairs:
+                        alreadyFoundPairs.add(tilePair(tp))
+                        yield(tp)
+
+
+    filteredPairs = [tp for tp in pair_iterator(f2)]
+
+    newPairs['neighborPairs'] = filteredPairs
+
+    writePairs(newPairs, f3)
+    print('Written ', len(filteredPairs), ' new pairs')
 
 
 if __name__ == '__main__':
