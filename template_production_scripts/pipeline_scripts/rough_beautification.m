@@ -6,8 +6,8 @@ rcsource.service_host   = '10.40.3.162:8080';
 rcsource.baseURL        = ['http://' rcsource.service_host '/render-ws/v1'];
 rcsource.verbose        = 1;
 
-nfirst = 4435;
-nlast = 4446;
+nfirst = 1369;
+nlast = 1378;
 
 % configure rough
 rcmontage.stack          = ['Revised_slab_' num2str(nfirst) '_' num2str(nlast) '_montage'];
@@ -27,7 +27,7 @@ rcrough.verbose        = 1;
 
 dir_rough_intermediate_store = '/nrs/flyTEM/khairy/FAFB00v13/montage_scape_pms';% intermediate storage of files
 dir_store_rough_slab = '/nrs/flyTEM/khairy/FAFB00v13/matlab_slab_rough_aligned';
-scale  = 0.02;
+scale  = 0.03;
 
 finescale = 0.4;
 nbrs = 3;
@@ -60,4 +60,4 @@ ms.run_dir                      = ['Slab_' ms.first '_' ms.last '_scale_' ms.sca
     solve_rough_slab(dir_store_rough_slab, rcmontage, ...
     rcmontage, rcrough, ms, nfirst,...
     nlast, dir_rough_intermediate_store, ...
-    1);
+    0);
