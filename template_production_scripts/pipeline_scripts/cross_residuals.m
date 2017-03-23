@@ -38,7 +38,7 @@ pm3.server = 'http://10.40.3.162:8080/render-ws/v1';
 pm3.owner = 'flyTEM';
 pm3.match_collection = 'Beautification_cross_sift_dist_4_00';
 
-pms = [pm1 pm2];
+pm
 
 generate_cross_section_point_match_residuals(oldrc, nfirst, nlast, pms, dopts);
 generate_cross_section_point_match_residuals(newrc, nfirst, nlast, pms, dopts);

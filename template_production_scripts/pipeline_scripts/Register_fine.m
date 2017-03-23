@@ -42,7 +42,9 @@ function [] = Register_fine(slabs, slab_def_fn, slabs_dir, opts_fn)
             rs_rough_opts = fine_align_opts.rs_rough_collection;
         end
         if isfield(fine_align_opts, 'pm_opts')
-            pm_opts = fine_align_opts.pm_opts;       
+            pm_opts = fine_align_opts.pm_opts;
+        else
+            pm_opts = {};
         end
         if isfield(fine_align_opts, 'pm_filter_opts')
             pm_filter_opts = fine_align_opts.pm_filter_opts;       
@@ -76,9 +78,21 @@ function [] = Register_fine(slabs, slab_def_fn, slabs_dir, opts_fn)
     rcrough.verbose = eval_field(rs_rough_opts, 'verbose', 1, false);
 
     % configure point-match collection
-    pm.server = eval_field(pm_opts, 'server', 'http://10.40.3.162:8080/render-ws/v1', true);
-    pm.owner = eval_field(pm_opts, 'owner', 'flyTEM', true);
-    pm.match_collection = eval_field(pm_opts, 'match_collection', 'v12_dmesh', true);
+    pms = {};
+    if numel(pm_opts) == 0
+        pm.server = 'http://10.40.3.162:8080/render-ws/v1';
+        pm.owner = 'flyTEM';
+        pm.match_collection = 'v12_dmesh';
+        pms = {pm};
+    else
+        for si = 1:numel(pm_opts)
+            pm.server = eval_field(pm_opts{si}, 'server', 'http://10.40.3.162:8080/render-ws/v1', true);
+            pm.owner = eval_field(pm_opts{si}, 'owner', 'flyTEM', true);
+            pm.match_collection = pm_opts{si}.match_collection;
+            pms{si} = pm;
+        end
+    end
+    
 
     %% configure solver
     opts.min_tiles = eval_field(solver_opts, 'min_tiles', 20); % minimum number of tiles that constitute a cluster to be solved. Below this, no modification happens
@@ -120,7 +134,7 @@ function [] = Register_fine(slabs, slab_def_fn, slabs_dir, opts_fn)
 
             %% read point-matches and filter them
             [L, tIds, PM, pm_mx, sectionId_load, z_load]  = ...
-                load_point_matches(nfirst, nlast, rcrough, pm, opts.nbrs, ...
+                load_point_matches(nfirst, nlast, rcrough, pms, opts.nbrs, ...
                 opts.min_points, opts.xs_weight);
 
             ntiles = max(L.pm.adj(:));

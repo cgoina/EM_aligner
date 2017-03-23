@@ -114,10 +114,3 @@ if sl.verbose
     disp('Finished:');
     kk_clock();
 end
-
-
-
-
-
-
-%% ingest into Renderer database (optional);

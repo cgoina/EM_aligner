@@ -1,3 +1,12 @@
+function rough_beautification(nfirst, nlast)
+
+if ischar(nfirst)
+    nfirst = str2double(nfirst);
+end
+if ischar(nlast)
+    nlast = str2double(nlast);
+end
+
 % configure source
 rcsource.stack          = 'v12_acquire_merged';
 rcsource.owner          ='flyTEM';
@@ -6,19 +15,27 @@ rcsource.service_host   = '10.40.3.162:8080';
 rcsource.baseURL        = ['http://' rcsource.service_host '/render-ws/v1'];
 rcsource.verbose        = 1;
 
-nfirst = 1369;
-nlast = 1378;
-
 % configure rough
-rcmontage.stack          = ['Revised_slab_' num2str(nfirst) '_' num2str(nlast) '_montage'];
+%rcmontage.stack          = ['Revised_slab_' num2str(nfirst) '_' num2str(nlast) '_montage'];
+%rcmontage.owner          ='flyTEM';
+%rcmontage.project        = 'FAFB00_beautification';
+%rcmontage.service_host   = '10.40.3.162:8080';
+%rcmontage.baseURL        = ['http://' rcmontage.service_host '/render-ws/v1'];
+%rcmontage.verbose        = 1;
+
+rcmontage.stack          = 'Revised_slab_5639_5647_x_80000_193000_y_0_84000';
 rcmontage.owner          ='flyTEM';
-rcmontage.project        = 'FAFB00_beautification';
+rcmontage.project        = 'goinac_test';
 rcmontage.service_host   = '10.40.3.162:8080';
 rcmontage.baseURL        = ['http://' rcmontage.service_host '/render-ws/v1'];
 rcmontage.verbose        = 1;
 
 % configure rough
-rcrough.stack          = ['Revised_slab_' num2str(nfirst) '_' num2str(nlast) '_rough'];
+%rcrough.stack          = ['Revised_slab_' num2str(nfirst) '_' num2str(nlast) '_rough'];
+%rcrough.owner          ='flyTEM';
+%rcrough.project        = 'FAFB00_beautification';
+
+rcrough.stack          = ['Revised_slab_' num2str(nfirst) '_' num2str(nlast) '_x_80000_193000_y_0_84000_rough'];
 rcrough.owner          ='flyTEM';
 rcrough.project        = 'FAFB00_beautification';
 rcrough.service_host   = '10.40.3.162:8080';
@@ -27,7 +44,7 @@ rcrough.verbose        = 1;
 
 dir_rough_intermediate_store = '/nrs/flyTEM/khairy/FAFB00v13/montage_scape_pms';% intermediate storage of files
 dir_store_rough_slab = '/nrs/flyTEM/khairy/FAFB00v13/matlab_slab_rough_aligned';
-scale  = 0.03;
+scale  = 0.05;
 
 finescale = 0.4;
 nbrs = 3;
@@ -60,4 +77,4 @@ ms.run_dir                      = ['Slab_' ms.first '_' ms.last '_scale_' ms.sca
     solve_rough_slab(dir_store_rough_slab, rcmontage, ...
     rcmontage, rcrough, ms, nfirst,...
     nlast, dir_rough_intermediate_store, ...
-    0);
+    1);

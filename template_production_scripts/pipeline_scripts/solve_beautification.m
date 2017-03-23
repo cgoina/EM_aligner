@@ -1,10 +1,25 @@
+function solve_beautification(nfirst, nlast, start_slab, end_slab)
 % fine-align the slab
 
-nfirst = 1369;
-nlast = 1378;
+if ischar(nfirst)
+    nfirst = str2double(nfirst);
+end
+if ischar(nlast)
+    nlast = str2double(nlast);
+end
+if nargin < 3
+    start_slab = nfirst;
+elseif ischar(start_slab)
+    start_slab = str2double(start_slab);
+end
+if nargin < 4
+    end_slab = nlast;
+elseif ischar(end_slab)
+    end_slab = str2double(end_slab);
+end
 
 % configure rough
-rcrough.stack          = ['Revised_slab_' num2str(nfirst) '_' num2str(nlast) '_rough'];
+rcrough.stack          = ['Revised_slab_' num2str(start_slab) '_' num2str(end_slab) '_rough'];
 rcrough.owner          ='flyTEM';
 rcrough.project        = 'FAFB00_beautification';
 rcrough.service_host   = '10.40.3.162:8080';
@@ -12,7 +27,7 @@ rcrough.baseURL        = ['http://' rcrough.service_host '/render-ws/v1'];
 rcrough.verbose        = 1;
 
 % configure fine alignment
-rcfine.stack          = ['Revised_slab_' num2str(nfirst) '_' num2str(nlast) '_fine'];
+rcfine.stack          = ['Revised_slab_' num2str(start_slab) '_' num2str(end_slab) '_fine'];
 rcfine.owner          ='flyTEM';
 rcfine.project        = 'FAFB00_beautification';
 rcfine.service_host   = '10.40.3.162:8080';
@@ -35,7 +50,7 @@ pms = {pm1 pm2};
 
 %% solve
 % configure solver
-opts.min_tiles = 25; % minimum number of tiles that constitute a cluster to be solved. Below this, no modification happens
+opts.min_tiles = 20; % minimum number of tiles that constitute a cluster to be solved. Below this, no modification happens
 opts.degree = 1;    % 1 = affine, 2 = second order polynomial, maximum is 3
 opts.outlier_lambda = 1e2;  % large numbers result in fewer tiles excluded
 opts.solver = 'backslash';%'pastix';%%'gmres';%'backslash';'pastix';
@@ -51,12 +66,14 @@ opts.dir_scratch = '/scratch/goinac';
 opts.min_points = 10;
 opts.max_points = 100;
 opts.nbrs = 5;
-opts.xs_weight = 0.1;
+opts.xs_weight = 1;
 opts.stvec_flag = 1;   % 0 = regularization against rigid model (i.e.; starting value is not supplied by rc)
+opts.dthresh_factor = .5;
+
 opts.distributed = 0;
 
-opts.lambda = 10.^(2);
-opts.edge_lambda = 10^(2);
+opts.lambda = 10.^(-1);
+opts.edge_lambda = 10^(-1);
 opts.A = [];
 opts.b = [];
 opts.W = [];
@@ -65,7 +82,7 @@ opts.W = [];
 opts.filter_point_matches = 1;
 opts.pmopts.NumRandomSamplingsMethod = 'Desired confidence';
 opts.pmopts.MaximumRandomSamples = 3000;
-opts.pmopts.DesiredConfidence = 99.8;
+opts.pmopts.DesiredConfidence = 99.9;
 opts.pmopts.PixelDistanceThreshold = .1;
 
 opts.verbose = 1;
