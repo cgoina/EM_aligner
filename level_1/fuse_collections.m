@@ -21,18 +21,23 @@ X2 = {};
 Y2 = {};
 Tvec =  zeros(numel(zu1),9);
 for zix = 1:numel(zu1)
-    [x1, y1, tids1] = get_tile_centers(rcfixed, zu1(zix));
-    [x2, y2, tids2] = get_tile_centers(rcmoving, zu2(zix));
-    [~,ia,ib] = intersect(tids1,tids2);
-    X1{zix} = [x1(ia)'];
-    Y1{zix} = [y1(ia)'];
-    X2{zix} = [x2(ib)'];
-    Y2{zix} = [y2(ib)'];
-    a = [x1(ia) y1(ia)];
-    b = [x2(ib) y2(ib)];
-    warning off;[tform] = cp2tform(b, a, 'nonreflective similarity');warning on;
-    t = [tform.tdata.T];
-    Tvec(zix,:) = t(1:9);
+    try
+        [x1, y1, tids1] = get_tile_centers(rcfixed, zu1(zix));
+        [x2, y2, tids2] = get_tile_centers(rcmoving, zu2(zix));
+        [~,ia,ib] = intersect(tids1,tids2);
+        X1{zix} = [x1(ia)'];
+        Y1{zix} = [y1(ia)'];
+        X2{zix} = [x2(ib)'];
+        Y2{zix} = [y2(ib)'];
+        a = [x1(ia) y1(ia)];
+        b = [x2(ib) y2(ib)];
+        warning off;[tform] = cp2tform(b, a, 'nonreflective similarity');warning on;
+        t = [tform.tdata.T];
+        Tvec(zix,:) = t(1:9);
+    catch err
+        disp(['Potential missing section ' num2str(zu1(zix))]);
+        kk_disp_err(err);
+    end
 end
 X1 = cell2mat(X1)';
 Y1 = cell2mat(Y1)';
